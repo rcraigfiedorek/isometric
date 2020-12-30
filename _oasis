@@ -1,0 +1,12 @@
+OASISFormat: 0.4
+Name:        isometric
+Version:     0.1
+Synopsis:    Quantum programming language to encode isometric quantum channels
+Authors:     Craig Fiedorek
+License:     MIT
+BuildTools: ocamlbuild
+Plugins: META (0.4), DevFiles (0.4)
+
+Executable "isometric"
+  Path: src
+  MainIs: toplevel.ml
