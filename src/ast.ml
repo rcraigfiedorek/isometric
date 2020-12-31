@@ -22,14 +22,14 @@ type local_ctx = local_decl list
 
 type global_decl =
   | GlobalAssum of const * typ
-  | GlobalDef of const * term * typ
+  | GlobalDef of const * typ * term
   | GlobalIndDef of const * ((const * typ) list)
 
 type global_ctx = global_decl list
 
 type command =
   | AssumCom of const * typ
-  | DefCom of const * term * typ
+  | DefCom of const * typ * term
   | IndDefCom of const * ((const * typ) list)
 
 type file = command list

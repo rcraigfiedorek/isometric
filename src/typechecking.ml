@@ -68,7 +68,7 @@ let rec wf gamma delta =
     | [] -> true
     | GlobalAssum (c, tp) :: gamma' ->
         valid_type gamma tp && not (List.mem c (global_names gamma'))
-    | GlobalDef (c, tm, tp) :: gamma' ->
+    | GlobalDef (c, tp, tm) :: gamma' ->
         type_of_term gamma [] tm = Some tp && not (List.mem c (global_names gamma'))
     | GlobalIndDef (c, constr_list) :: gamma' ->
         wf gamma' []
@@ -109,7 +109,7 @@ and type_of_term_ret gamma delta tm : (local_ctx * typ) option =
       let rec type_of_constant = function
         | [] -> None
         | GlobalAssum (c',tp) :: gamma' -> if c = c' then Some tp else type_of_constant gamma'
-        | GlobalDef (c',_,tp) :: gamma' -> if c = c' then Some tp else type_of_constant gamma'
+        | GlobalDef (c',tp,_) :: gamma' -> if c = c' then Some tp else type_of_constant gamma'
         | GlobalIndDef (_,constr_list) :: gamma' ->
             match List.assoc_opt c constr_list with
             | Some tp as o -> o
@@ -172,7 +172,7 @@ and type_of_term_ret gamma delta tm : (local_ctx * typ) option =
                           None
                     end
                 | _, _ -> None
-              end
+                end
             | None -> None (* shouldn't get here *)
             end
         | _ -> None

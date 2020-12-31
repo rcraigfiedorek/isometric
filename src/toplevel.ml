@@ -1,4 +1,10 @@
-open Ast
-open Typechecking
-
-let _ = print_string "Hello world.\n"
+(* File calc.ml *)
+let _ =
+  try
+    let lexbuf = Lexing.from_channel stdin in
+    while true do
+      let result = Parser.main Lexer.token lexbuf in
+        flush stdout
+    done
+  with Lexer.Eof ->
+    exit 0
