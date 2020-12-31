@@ -6,7 +6,7 @@ exception Eof
 let whitespace = [' ' '\t' '\n']
 
 rule token = parse
-	| whitespace		{ toxen lexbuf }
+	| whitespace		{ token lexbuf }
 	| "."				{ EOC }
 	| "("				{ LPAREN }
 	| ")"				{ RPAREN }
