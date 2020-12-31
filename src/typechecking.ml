@@ -1,5 +1,5 @@
 open Complex
-open Ast
+open Intrep
 
 (* auxiliary list functions *)
 

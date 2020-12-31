@@ -2,34 +2,23 @@ open Complex
 
 (* type definitions for abstract syntax tree *)
 
-type var = Var of string
+type ident = Ident of string
 
-type const = Const of string
+type typ_expr =
+  | ConstTypeExpr of ident
+  | LolliExpr of typ_expr * typ_expr
 
-type typ = ConstType of const | Lolli of typ * typ
+type pattern_expr = ident list
 
-type term =
-  | VarTerm of var
-  | ConstTerm of const
-  | Lambda of var * typ * term
-  | App of term * term
-  | LinComb of (Complex.t * term) list
-  | Match of term * typ * term list
+type term_expr =
+  | IdentTermExpr of ident
+  | LambdaExpr of ident * typ_expr * term_expr
+  | AppExpr of term_expr * term_expr
+  | LinCombExpr of (Complex.t * term_expr) list
+  | MatchExpr of term_expr * typ_expr * (pattern_expr * term_expr) list
 
-type local_decl = var * typ
+type command_expr =
+  | AssumCom of ident * typ_expr
+  | DefCom of ident * typ_expr * term_expr
+  | IndDefCom of ident * ((ident * typ_expr) list)
 
-type local_ctx = local_decl list
-
-type global_decl =
-  | GlobalAssum of const * typ
-  | GlobalDef of const * typ * term
-  | GlobalIndDef of const * ((const * typ) list)
-
-type global_ctx = global_decl list
-
-type command =
-  | AssumCom of const * typ
-  | DefCom of const * typ * term
-  | IndDefCom of const * ((const * typ) list)
-
-type file = command list

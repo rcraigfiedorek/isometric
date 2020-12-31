@@ -16,12 +16,12 @@ rule token = parse
 	| "fun"				{ LAMBDA }
 	| "=>"				{ MAPSTO }
 	| "match" 			{ MATCH }
+	| "return"			{ RETURN }
 	| "with" 			{ WITH }
 	| "|"				{ CASE }
 	| "end"				{ END }
 	| "Type"			{ TYPEDEF }
 	| "Let"				{ TERMDEF }
 	| "Parameter"		{ ASSUMPTION }
-	| ['a'-'z']['a'-'z' 'A'-'Z' '_' '0'-'9']*['\'']* as id { VAR(Var id) }
-	| ['A'-'Z']['a'-'z' 'A'-'Z' '_' '0'-'9']*['\'']* as id { CONST(Const id) }
+	| ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '_' '0'-'9']*['\'']* as id { IDENT(Ident id) }
 	| eof				{ raise Eof }
