@@ -1,0 +1,9 @@
+opam-version: "2.0.8"
+version: "0.0"
+maintainer: "rcraigfiedorek@gmail.com"
+authors: ["Craig Fiedorek"]
+homepage: "https://github.com/rcraigfiedorek/isometric"
+license: "MIT"
+build: [
+  ["dune" "build" "-p" name "-j" jobs]
+]
