@@ -4,21 +4,21 @@ open Complex
 
 type ident = Ident of string
 
-type typ_expr =
-  | ConstTypeExpr of ident
-  | LolliExpr of typ_expr * typ_expr
+type typ =
+  | ConstType of ident
+  | Lolli of typ * typ
 
-type pattern_expr = ident list
+type pattern = ident list
 
-type term_expr =
-  | IdentTermExpr of ident
-  | LambdaExpr of ident * typ_expr * term_expr
-  | AppExpr of term_expr * term_expr
-  | LinCombExpr of (Complex.t * term_expr) list
-  | MatchExpr of term_expr * typ_expr * (pattern_expr * term_expr) list
+type term =
+  | IdentTerm of ident
+  | Lambda of ident * typ * term
+  | App of term * term
+  | LinComb of (Complex.t * term) list
+  | Match of term * typ * (pattern * term) list
 
-type command_expr =
-  | AssumCom of ident * typ_expr
-  | DefCom of ident * typ_expr * term_expr
-  | IndDefCom of ident * ((ident * typ_expr) list)
+type command =
+  | AssumCom of ident * typ
+  | DefCom of ident * typ * term
+  | IndDefCom of ident * ((ident * typ) list)
 

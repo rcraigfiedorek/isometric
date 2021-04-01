@@ -1,7 +1,19 @@
 open Complex
 
-(* type definitions for abstract syntax tree *)
+type ident_lookup =
+  | TypeIdent of (ident * typ) list
+  | AssumedIdent of typ
+  | DefinedIdent of typ * term
 
+let ident_is_type env c =
+  match Hashtbl.find_opt env c with
+  | Some (TypeIdent _) -> true
+  | _ -> false
+
+
+
+(* type definitions for abstract syntax tree *)
+(*
 type var = Var of string
 
 type const = Const of string
@@ -33,3 +45,4 @@ type command =
   | IndDefCom of const * ((const * typ) list)
 
 type file = command list
+*)

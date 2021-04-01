@@ -14,19 +14,24 @@ open Ast
 %right LOLLI
 
 %start main
-%type <Ast.command_expr> main
+%type <Ast.command> main
 
 %%
 main:
   | TYPEDEF IDENT DEFEQUAL
-      ind_constructors EOC                    { IndDefCom ($2, $4) }
+      ind_constructors_with_EOC               { IndDefCom ($2, $4) }
   | TERMDEF IDENT COLON tp DEFEQUAL
       tm EOC                                  { DefCom ($2, $4, $6) }
   | ASSUMPTION IDENT COLON tp EOC             { AssumCom ($2, $4) }
 ;
-ind_constructors:
-  | END                                       { [] }
-  | CASE IDENT COLON tp ind_constructors      { ($2, $4) :: $5 }
+ind_constructors_with_EOC:
+  | CASE IDENT COLON tp more_ind_constructors { ($2, $4) :: $5 }
+  | IDENT COLON tp more_ind_constructors      { ($1, $3) :: $4 }
+  | EOC                                       { [] }
+;
+more_ind_constructors:
+  | CASE IDENT COLON tp more_ind_constructors { ($2, $4) :: $5 }
+  | EOC                                       { [] }
 ;
 tp:
   | IDENT                                     { ConstTypeExpr $1 }
@@ -42,7 +47,12 @@ tm:
 ;
 match_cases:
   | END                                       { [] }
-  | CASE pattern tm match_cases               { ($2, $3) :: $4 }
+  | pattern tm more_match_cases               { ($1, $2) :: $3 }
+  | CASE pattern tm more_match_cases          { ($2, $3) :: $4 }
+;
+more_match_cases:
+  | END                                       { [] }
+  | CASE pattern tm more_match_cases          { ($2, $3) :: $4 }
 ;
 pattern:
   | IDENT MAPSTO                              { [ $1 ] }
