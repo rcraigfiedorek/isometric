@@ -2,14 +2,13 @@
 open Ast
 %}
 
-
 %token <Ast.ident> IDENT
 %token LPAREN RPAREN
-%token LOLLI
 %token LAMBDA MAPSTO
 %token MATCH RETURN WITH CASE END
 %token COLON DEFEQUAL
 %token TYPEDEF TERMDEF ASSUMPTION EOC
+%token LOLLI
 
 %right LOLLI
 
@@ -34,16 +33,16 @@ more_ind_constructors:
   | EOC                                       { [] }
 ;
 tp:
-  | IDENT                                     { ConstTypeExpr $1 }
+  | IDENT                                     { ConstType $1 }
   | LPAREN tp RPAREN                          { $2 }
-  | tp LOLLI tp                               { LolliExpr ($1, $3) }
+  | tp LOLLI tp                               { Lolli ($1, $3) }
 ;
 tm:
-  | IDENT                                     { IdentTermExpr $1 }
+  | IDENT                                     { IdentTerm $1 }
   | LPAREN tm RPAREN                          { $2 }
-  | tm tm                                     { AppExpr ($1, $2) }
-  | LAMBDA IDENT COLON tp MAPSTO tm           { LambdaExpr ($2, $4, $6) }
-  | MATCH tm RETURN tp WITH match_cases       { MatchExpr ($2, $4, $6) }
+  | tm tm                                     { App ($1, $2) }
+  | LAMBDA IDENT COLON tp MAPSTO tm           { Lambda ($2, $4, $6) }
+  | MATCH tm RETURN tp WITH match_cases       { Match ($2, $4, $6) }
 ;
 match_cases:
   | END                                       { [] }

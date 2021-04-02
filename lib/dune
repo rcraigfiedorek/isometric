@@ -1,2 +1,6 @@
+(ocamlyacc parser)
+
+(ocamllex lexer)
+
 (executable
  (name toplevel))
