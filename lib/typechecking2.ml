@@ -1,6 +1,5 @@
 open Complex
 open Ast
-open Intrep
 
 (*  type deduction etc. *)
 
