@@ -88,54 +88,34 @@ and type_of_term_ret env ctx tm : typ =
         | TypeIdent constructors ->
           begin match tm_list, constructors with
           | [], [] -> tp
-          | f1 :: tm_list', (_,tp1) :: constructors' ->
-            let ctx1 = Hashtbl.copy ctx in
-            let case_tp1 = tyupe_of_term_ret env ctx1 f1 in
-            
+          | f1 :: tm_list' as tm_list, (_,tp1) :: constructors' ->
+            let ctx_copy = Hashtbl.copy ctx in
+            let case_tp1 = type_of_term_ret env ctx f1 in
+            if case_tp1 = match_case_type c tp tp1
+            then
+              if (List.for_all2
+                   (fun fi (_, tpi) ->
+                     let ctxi = Hashtbl.copy ctx_copy in
+                     type_of_term_ret env ctxi fi = match_case_type c tp tpi
+                     && ctx = ctxi)
+                 tm_list' constructors')
+              then
+                let consumed_ctx = Hashtbl.copy ctx_copy in
+                Hashtbl.iter (fun x _ -> Hashtbl.remove consumed_ctx x) ctx;
+                if List.for_all (fun (fi,fj) -> orth env consumed_ctx fi fj) (getpairs tm_list)
+                then tp
+                else raise TypeCheckingError
+              else raise TypeCheckingError
+            else raise TypeCheckingError
           | _, _ -> raise TypeCheckingError
           end
         | _ -> (* Only get here if last type check ran incorrectly *) raise TypeCheckingError
         end
       end
 
-
-
-      begin match type_of_term_ret gamma delta tm with
-      | Some (delta', (ConstType c)) ->
-          begin match get_constr_of_indtype c gamma with
-          | Some constr_list ->
-              begin match tm_list, constr_list with
-              | [], [] -> Some (delta',tp)
-              | f1 :: tm_list', (_,tp1) :: constr_list' ->
-                  begin match type_of_term_ret gamma delta' f1 with
-                  | None -> None
-                  | Some (delta'', case_tp1) ->
-                      if case_tp1 <> match_case_type c tp tp1 then None else
-                      if List.length tm_list' <> List.length constr_list' then None else
-                      if not (List.for_all2
-                          (fun fi (_, tpi) ->
-                            type_of_term_ret gamma delta' fi = Some (delta'', match_case_type c tp tpi))
-                              tm_list' constr_list')
-                      then None else
-                      let case_resources = List.filter (fun p -> not (List.mem p delta'')) delta' in
-                      if List.for_all (fun (fi,fj) -> orth gamma case_resources fi fj) (getpairs tm_list)
-                      then
-                        Some (delta'', tp)
-                      else
-                        None
-                  end
-              | _, _ -> None
-              end
-          | None -> None (* shouldn't get here *)
-          end
-      | _ -> None
-      end
-
-and orth gamma delta s t =
+and orth env ctx s t =
   true
 
-
-let _ = print_string "Hello world.\n"
 
 
 
