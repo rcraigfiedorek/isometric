@@ -1,11 +1,17 @@
 open Ast
 
-let global_ctx = Hashtbl.create 100
+exception InvalidInputError of string
 
 type ident_lookup =
   | TypeIdent of (ident * typ) list
   | AssumedIdent of typ
   | DefinedIdent of typ * term
+
+let global_ctx = Hashtbl.create 100
+
+let valid_type _ _ = true
+let valid_term _ _ _ = true
+let valid_ind_def _ _ = true
 
 let handle_command cmd = match cmd with
   | AssumCom (id, tp) ->
@@ -20,7 +26,7 @@ let handle_command cmd = match cmd with
       if valid_ind_def global_ctx constructors
         then
              begin Hashtbl.add global_ctx id (TypeIdent constructors);
-             iter (fun (c_id, c_tp) -> Hashtbl.add global_ctx c_id (AssumedIdent c_tp)) constructors
+             List.iter (fun (c_id, c_tp) -> Hashtbl.add global_ctx c_id (AssumedIdent c_tp)) constructors
              end
         else raise (InvalidInputError "Invalid inductive type definition.")
 
@@ -29,8 +35,8 @@ let _ =
     let lexbuf = Lexing.from_channel stdin in
     while true do
       try
-        let _ = Parser.main Lexer.token lexbuf in
-          (handle_command cmd;
+        let cmd = Parser.main Lexer.token lexbuf in
+          handle_command cmd;
           flush stdout
       with Stdlib.Parsing.Parse_error ->
         print_string "Invalid syntax.\n";
