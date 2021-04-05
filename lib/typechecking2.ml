@@ -3,23 +3,35 @@ open Ast
 
 (*  type deduction etc. *)
 
+let ident_is_type env id =
+  match find_opt env id with
+  | Some (TypeIdent _) -> true
+  | _ -> false
+
 (* Given valid global environment env, is tp a valid type *)
 let rec valid_type env tp =
   match tp with
   | Lolli (tp1,tp2) -> valid_type env tp1 && valid_type env tp2
   | ConstType c -> ident_is_type env c
 
-and is_constructor_type gamma tp c =
-  match tp with
-  | ConstType c' -> c = c' && wf gamma [] && not (List.mem c (global_names gamma))
-  | Lolli (tp1,tp2) ->
-      let l,d = constr_type_argtype_sep tp1 in
-      (c = d || valid_type gamma (ConstType d))
-      && List.for_all (valid_type gamma) l
-      && is_constructor_type gamma tp2 c
+(* maps type A_1 -o ... -o A_n -o (ConstType c) to ([A_1; ...; A_n], c) *)
+let rec get_constr_type_args = function
+  | ConstType c -> ([], c)
+  | Lolli (tp1, tp2) -> let (l,c) = constr_type_argtype_sep tp2 in (tp1 :: l, c)
 
-and type_of_term gamma delta tm : typ option =
-  match type_of_term_ret gamma delta tm with
+let rec is_constructor_type_of_ind_type env ind_tp_name constr_tp =
+  match constr_tp with
+  | ConstType c -> c = ind_tp_name && not (Hashtbl.mem env ind_tp_name)
+  | Lolli (tp1, tp2) ->
+      let (l, c) = get_constr_type_args tp1 in
+      (c = ind_type_name || valid_type env (ConstType c))
+      && List.for_all (valid_type env) l
+      && is_constructor_type_of_ind_type env ind_tp_name tp2
+
+
+
+let rec type_of_term env tm : typ option =
+  match type_of_term_ret env [] tm with
   | Some ([],tp) -> Some tp
   | _ -> None
 

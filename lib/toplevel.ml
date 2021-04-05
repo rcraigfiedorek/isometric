@@ -30,7 +30,7 @@ let _ =
     while true do
       try
         let _ = Parser.main Lexer.token lexbuf in
-          handle_command cmd;
+          (handle_command cmd;
           flush stdout
       with Stdlib.Parsing.Parse_error ->
         print_string "Invalid syntax.\n";
