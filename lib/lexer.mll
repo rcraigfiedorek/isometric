@@ -25,3 +25,4 @@ rule token = parse
 	| "Parameter"		{ ASSUMPTION }
 	| ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '_' '0'-'9']*['\'']* as id { IDENT(Ident id) }
 	| eof				{ raise Eof }
+(* TODO: add specific lexing errors. Parse all things that don't fit here to avoid empty token errors *)

@@ -1,17 +1,9 @@
 open Ast
+open Typechecking2
 
 exception InvalidInputError of string
 
-type ident_lookup =
-  | TypeIdent of (ident * typ) list
-  | AssumedIdent of typ
-  | DefinedIdent of typ * term
-
 let global_ctx = Hashtbl.create 100
-
-let valid_type _ _ = true
-let valid_term _ _ _ = true
-let valid_ind_def _ _ = true
 
 let handle_command cmd = match cmd with
   | AssumCom (id, tp) ->
@@ -23,7 +15,7 @@ let handle_command cmd = match cmd with
         then Hashtbl.add global_ctx id (DefinedIdent (tp, tm))
         else raise (InvalidInputError "Not a well-formed type and/or term in the global context.")
   | IndDefCom (id, constructors) ->
-      if valid_ind_def global_ctx constructors
+      if valid_ind_def global_ctx id constructors
         then
              begin Hashtbl.add global_ctx id (TypeIdent constructors);
              List.iter (fun (c_id, c_tp) -> Hashtbl.add global_ctx c_id (AssumedIdent c_tp)) constructors
