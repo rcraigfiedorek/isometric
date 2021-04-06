@@ -103,7 +103,7 @@ and type_of_term_ret env ctx tm : typ =
       end
   | Lambda (x, tp, tm') ->
       Hashtbl.add ctx x tp;
-      type_of_term_ret env ctx tm'
+      Lolli (tp, type_of_term_ret env ctx tm')
   | App (func_tm, arg_tm) ->
       let func_tp = type_of_term_ret env ctx func_tm in
       let arg_tp = type_of_term_ret env ctx arg_tm in
