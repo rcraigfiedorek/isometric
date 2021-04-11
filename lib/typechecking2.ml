@@ -22,6 +22,9 @@ let rec vect_norm2 = function
   | [z] -> norm2 z
   | z :: v -> norm2 z +. vect_norm2 v
 
+(* Rough equality for floats *)
+let rough_eq f1 f2 = Float.round (10_000_000. *. f1) = Float.round (10_000_000. *. f2)
+
 (* Parse a lambda abstraction from a pattern match *)
 let lambda_from_pattern_match constr_name constr_tp pat tm =
   match pat with
@@ -122,7 +125,7 @@ and type_of_term_ret env ctx tm : typ =
           then
             if List.for_all (fun ((_,tmi),(_,tmj)) -> orth env ctx tmi tmj) (getpairs l)
             then
-              if vect_norm2 (List.map fst l) = 1.
+              if rough_eq 1. (vect_norm2 (List.map fst l))
               then tp
               else raise TypeCheckingError
             else raise TypeCheckingError
