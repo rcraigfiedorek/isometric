@@ -41,10 +41,14 @@ module Make(R: Ring) =
       Array.iter2 (fun x y -> out := R.add !out (R.mul x y)) arr1 arr2;
       !out
 
+    (* Implement a faster matrix multiplication algorithm at some point *)
     let mul mat1 mat2 =
       let n = validate_dim mat1 mat2 in
       init n (fun i j -> dot (row i mat1) (col j mat2))
 
+    let signless_det mat =
+      try
+        let n = Utils.array_find mat (fun row -> row.(0) <> R.zero)
 
 
 
