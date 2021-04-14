@@ -20,6 +20,8 @@ let evalc p z =
       Complex.add (Complex.mul z prev) {re=float_of_int coeff; im=0.})
     Complex.zero p
 
+let neg p = init (degree p) (fun i -> - p.(i))
+
 let add p q =
   let d = max (degree p) (degree q) in
   init d (fun i -> p.(i) + q.(i))
